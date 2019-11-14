@@ -8,8 +8,11 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/klim0v/minter-node-cli/pb"
 	rpc "github.com/tendermint/tendermint/rpc/client"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"net"
 )
 
 type Manager struct {
@@ -74,4 +77,34 @@ func (m *Manager) DealPeer(ctx context.Context, req *pb.DealPeerRequest) (*empty
 
 func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) *Manager {
 	return &Manager{blockchain: blockchain, tmRPC: tmRPC, cfg: cfg}
+}
+
+func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) error {
+	lis, err := net.ListenUnix("unix", &net.UnixAddr{Name: socketPath, Net: "unix"})
+	if err != nil {
+		return err
+	}
+
+	server := grpc.NewServer()
+
+	pb.RegisterManagerServiceServer(server, manager)
+
+	group, ctx := errgroup.WithContext(ctx)
+	group.Go(func() error {
+		err := server.Serve(lis)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	func() {
+		<-ctx.Done()
+		server.GracefulStop()
+	}()
+
+	err = group.Wait()
+	if err != nil {
+		return err
+	}
 }

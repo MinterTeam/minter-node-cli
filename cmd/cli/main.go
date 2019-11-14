@@ -27,8 +27,8 @@ func NewApi(client pb.ManagerServiceClient) *Api {
 func main() {
 	s, err := filepath.Abs(filepath.Join(".", "config", "file.sock"))
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(0)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
 	}
 
 	var socketPath = flag.String("config", s, "path to dir with config socketPath")
@@ -36,8 +36,8 @@ func main() {
 
 	cc, err := grpc.Dial("passthrough:///unix:///"+*socketPath, grpc.WithInsecure())
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(0)
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		return
 	}
 
 	api := NewApi(pb.NewManagerServiceClient(cc))
@@ -167,7 +167,7 @@ func main() {
 		fmt.Print("$ ")
 		cmd, err := reader.ReadString('\n')
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			_, _ = fmt.Fprintln(os.Stderr, err)
 			continue
 		}
 		_ = app.Run(append([]string{""}, strings.Fields(cmd)...))
