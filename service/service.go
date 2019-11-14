@@ -112,5 +112,8 @@ func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) er
 	if err != nil {
 		return err
 	}
+
 	close(kill)
+
+	return nil
 }
