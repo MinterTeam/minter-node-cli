@@ -25,17 +25,17 @@ func (m *Manager) Status(context.Context, *empty.Empty) (*pb.StatusResponse, err
 	response := new(pb.StatusResponse)
 	resultStatus, err := m.tmRPC.Status()
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	bytes, err := json.Marshal(resultStatus)
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	err = json.Unmarshal(bytes, response)
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	return response, nil
