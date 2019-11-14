@@ -142,6 +142,8 @@ message PruneBlocksRequest {
 }
 
 message DealPeerRequest {
+    string address = 1;
+    bool persistent = 2;
 }
 
 service ManagerService {

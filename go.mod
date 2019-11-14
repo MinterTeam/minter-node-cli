@@ -4,10 +4,9 @@ go 1.13
 
 require (
 	github.com/MinterTeam/minter-go-node v1.0.4
-	github.com/danil-lashin/iavl v0.11.2 // indirect
-	github.com/danil-lashin/tendermint v0.31.4 // indirect
 	github.com/golang/protobuf v1.3.2
 	github.com/tendermint/tendermint v0.32.6
+	github.com/urfave/cli/v2 v2.0.0-alpha.2
 	google.golang.org/grpc v1.25.0
 )
 

@@ -8,6 +8,8 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/klim0v/minter-node-cli/pb"
 	rpc "github.com/tendermint/tendermint/rpc/client"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type Manager struct {
@@ -40,30 +42,34 @@ func (m *Manager) NetInfo(context.Context, *empty.Empty) (*pb.NetInfoResponse, e
 	response := new(pb.NetInfoResponse)
 	resultNetInfo, err := m.tmRPC.NetInfo()
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	bytes, err := json.Marshal(resultNetInfo)
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	err = json.Unmarshal(bytes, response)
 	if err != nil {
-		return response, err
+		return response, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
 	return response, nil
 }
 
-func (m *Manager) PruneBlocks(context.Context, *pb.PruneBlocksRequest) (*empty.Empty, error) {
-	//m.blockchain.
+func (m *Manager) PruneBlocks(ctx context.Context, req *pb.PruneBlocksRequest) (*empty.Empty, error) {
+	//m.blockchain.PruneStates(req.FromHeight, req.ToHeight)
 	panic("PruneBlocks")
 }
 
-func (m *Manager) DealPeer(context.Context, *pb.DealPeerRequest) (*empty.Empty, error) {
-	//m.blockchain.
-	panic("DealPeer")
+func (m *Manager) DealPeer(ctx context.Context, req *pb.DealPeerRequest) (*empty.Empty, error) {
+	res := new(empty.Empty)
+	_, err := m.tmRPC.DialPeers([]string{req.Address}, req.Persistent)
+	if err != nil {
+		return res, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	return res, nil
 }
 
 func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) *Manager {
