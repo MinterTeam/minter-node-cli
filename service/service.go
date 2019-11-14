@@ -98,13 +98,19 @@ func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) er
 		return nil
 	})
 
+	kill := make(chan struct{})
 	func() {
-		<-ctx.Done()
-		server.GracefulStop()
+		select {
+		case <-ctx.Done():
+			server.GracefulStop()
+		case <-kill:
+		}
+		return
 	}()
 
 	err = group.Wait()
 	if err != nil {
 		return err
 	}
+	close(kill)
 }
