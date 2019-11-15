@@ -140,7 +140,7 @@ func RunCli(socketPath string, agrs []string) {
 		},
 	}
 
-	for i := 1; i < len(agrs); i++ {
+	for i := 0; i < len(agrs); i++ {
 		if agrs[i] == "exec" {
 			_ = app.Run(agrs[i:])
 			return

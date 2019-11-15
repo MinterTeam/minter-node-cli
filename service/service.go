@@ -8,11 +8,8 @@ import (
 	"github.com/MinterTeam/minter-node-cli/pb"
 	"github.com/golang/protobuf/ptypes/empty"
 	rpc "github.com/tendermint/tendermint/rpc/client"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net"
 )
 
 type Manager struct {
@@ -21,21 +18,25 @@ type Manager struct {
 	cfg        *config.Config
 }
 
+func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) *Manager {
+	return &Manager{blockchain: blockchain, tmRPC: tmRPC, cfg: cfg}
+}
+
 func (m *Manager) Status(context.Context, *empty.Empty) (*pb.StatusResponse, error) {
 	response := new(pb.StatusResponse)
 	resultStatus, err := m.tmRPC.Status()
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	bytes, err := json.Marshal(resultStatus)
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	err = json.Unmarshal(bytes, response)
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	return response, nil
@@ -45,17 +46,17 @@ func (m *Manager) NetInfo(context.Context, *empty.Empty) (*pb.NetInfoResponse, e
 	response := new(pb.NetInfoResponse)
 	resultNetInfo, err := m.tmRPC.NetInfo()
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	bytes, err := json.Marshal(resultNetInfo)
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	err = json.Unmarshal(bytes, response)
 	if err != nil {
-		return response, status.Error(codes.FailedPrecondition, err.Error())
+		return response, status.Error(codes.Internal, err.Error())
 	}
 
 	return response, nil
@@ -70,50 +71,7 @@ func (m *Manager) DealPeer(ctx context.Context, req *pb.DealPeerRequest) (*empty
 	res := new(empty.Empty)
 	_, err := m.tmRPC.DialPeers([]string{req.Address}, req.Persistent)
 	if err != nil {
-		return res, status.Error(codes.FailedPrecondition, err.Error())
+		return res, status.Error(codes.Internal, err.Error())
 	}
 	return res, nil
-}
-
-func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) *Manager {
-	return &Manager{blockchain: blockchain, tmRPC: tmRPC, cfg: cfg}
-}
-
-func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) error {
-	lis, err := net.ListenUnix("unix", &net.UnixAddr{Name: socketPath, Net: "unix"})
-	if err != nil {
-		return err
-	}
-
-	server := grpc.NewServer()
-
-	pb.RegisterManagerServiceServer(server, manager)
-
-	group, ctx := errgroup.WithContext(ctx)
-	group.Go(func() error {
-		err := server.Serve(lis)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-
-	kill := make(chan struct{})
-	func() {
-		select {
-		case <-ctx.Done():
-			server.GracefulStop()
-		case <-kill:
-		}
-		return
-	}()
-
-	err = group.Wait()
-	if err != nil {
-		return err
-	}
-
-	close(kill)
-
-	return nil
 }
