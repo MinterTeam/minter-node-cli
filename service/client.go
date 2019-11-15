@@ -1,10 +1,9 @@
-package main
+package service
 
 import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/MinterTeam/minter-node-cli/pb"
 	"github.com/golang/protobuf/proto"
@@ -12,7 +11,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -24,17 +22,8 @@ func NewApi(client pb.ManagerServiceClient) *Api {
 	return &Api{client: client}
 }
 
-func main() {
-	s, err := filepath.Abs(filepath.Join(".", "config", "file.sock"))
-	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		return
-	}
-
-	var socketPath = flag.String("config", s, "path to dir with config socketPath")
-	flag.Args()
-
-	cc, err := grpc.Dial("passthrough:///unix:///"+*socketPath, grpc.WithInsecure())
+func RunCli(socketPath string, agrs []string) {
+	cc, err := grpc.Dial("passthrough:///unix:///"+socketPath, grpc.WithInsecure())
 	if err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		return
@@ -151,9 +140,9 @@ func main() {
 		},
 	}
 
-	for i := 1; i < len(os.Args); i++ {
-		if os.Args[i] == "exec" {
-			_ = app.Run(os.Args[i:])
+	for i := 1; i < len(agrs); i++ {
+		if agrs[i] == "exec" {
+			_ = app.Run(agrs[i:])
 			return
 		}
 	}
