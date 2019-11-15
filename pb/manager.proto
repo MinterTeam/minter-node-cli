@@ -30,10 +30,6 @@ message NodeInfo {
 }
 
 message NetInfoResponse {
-    string jsonrpc = 3;
-    string id = 1;
-
-    message Result {
         bool listening = 4;
         repeated string listeners = 1;
         string n_peers = 2;
@@ -83,20 +79,13 @@ message NetInfoResponse {
         }
 
         repeated Peer peers = 3;
-    }
-
-    Result result = 2;
 }
 
 message StatusResponse {
-    string jsonrpc = 3;
-    string id = 1;
-
-    message Result {
         string version = 7;
         string latest_block_hash = 1;
         string latest_app_hash = 2;
-        string latest_block_height = 3;
+        int64 latest_block_height = 3;
         string latest_block_time = 4;
         string state_history = 5;
 
@@ -107,7 +96,7 @@ message StatusResponse {
             message SyncInfo {
                 string latest_block_hash = 5;
                 string latest_app_hash = 1;
-                string latest_block_height = 2;
+                int64 latest_block_height = 2;
                 string latest_block_time = 3;
                 bool catching_up = 4;
             }
@@ -123,17 +112,13 @@ message StatusResponse {
                 }
 
                 PubKey pub_key = 1;
-                string voting_power = 2;
+                int64 voting_power = 2;
             }
 
             ValidatorInfo validator_info = 2;
         }
 
         TmStatus tm_status = 6;
-    }
-
-    Result result = 2;
-
 }
 
 message PruneBlocksRequest {

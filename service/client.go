@@ -39,22 +39,23 @@ func RunCli(socketPath string, agrs []string) {
 			Aliases: []string{"dp"},
 			Usage:   "connect a new peer",
 			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "address", Aliases: []string{"a"}, Required: true},
 				&cli.BoolFlag{Name: "persistent", Aliases: []string{"p"}, Required: false},
 				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
 				_, err := api.client.DealPeer(context.Background(), &pb.DealPeerRequest{
-					Address:    c.String("pear"), //todo
+					Address:    c.String("address"),
 					Persistent: c.Bool("persistent"),
 				})
 				if err != nil {
 					return err
 				}
 				if c.Bool("json") {
-					_, _ = fmt.Fprintln(os.Stdout, "OK")
+					fmt.Println("OK")
 					return nil
 				}
-				_, _ = fmt.Fprintln(os.Stdout, "OK")
+				fmt.Println("OK")
 				return nil
 			},
 		},
@@ -76,10 +77,10 @@ func RunCli(socketPath string, agrs []string) {
 					return err
 				}
 				if c.Bool("json") {
-					_, _ = fmt.Fprintln(os.Stdout, "OK")
+					fmt.Println("OK")
 					return nil
 				}
-				_, _ = fmt.Fprintln(os.Stdout, "OK")
+				fmt.Println("OK")
 				return nil
 			},
 		},
@@ -100,10 +101,10 @@ func RunCli(socketPath string, agrs []string) {
 					if err != nil {
 						return err
 					}
-					_, _ = fmt.Fprintln(os.Stdout, string(bytes))
+					fmt.Println(string(bytes))
 					return nil
 				}
-				_, _ = fmt.Fprintln(os.Stdout, proto.MarshalTextString(response))
+				fmt.Println(proto.MarshalTextString(response))
 				return nil
 			},
 		},
@@ -124,10 +125,10 @@ func RunCli(socketPath string, agrs []string) {
 					if err != nil {
 						return err
 					}
-					_, _ = fmt.Fprintln(os.Stdout, string(bytes))
+					fmt.Println(string(bytes))
 					return nil
 				}
-				_, _ = fmt.Fprintln(os.Stdout, proto.MarshalTextString(response))
+				fmt.Println(proto.MarshalTextString(response))
 				return nil
 			},
 		},
@@ -145,7 +146,7 @@ func RunCli(socketPath string, agrs []string) {
 			Aliases: []string{"t"},
 			Usage:   "test",
 			Action: func(c *cli.Context) error {
-				_, _ = fmt.Fprintln(os.Stdout, "test ok")
+				fmt.Println("test ok")
 				return nil
 			},
 		},
