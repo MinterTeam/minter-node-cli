@@ -1,10 +1,14 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/MinterTeam/events-db v0.1.0/go.mod h1:ZnKNYUSFUgVTTB359LvKQbroYqBiriXmbnyaMsULU2o=
+github.com/MinterTeam/events-db v0.1.1-0.20191113155258-73206cb9a3ea h1:r/vg2BjhaPhYOIjuyWoVw7+S006RCU+gMgkpRvJnMNI=
+github.com/MinterTeam/events-db v0.1.1-0.20191113155258-73206cb9a3ea/go.mod h1:INfo4gbiX8/EGfjHmRvvW2+5YuOcTy7Tob69yUhAqU4=
 github.com/MinterTeam/go-amino v0.14.1/go.mod h1:2sqs1fcf3DcQpvIJarkzVCjALWc11WDwc5oFHCrG5R4=
-github.com/MinterTeam/go-amino v0.14.2-0.20191028111634-b14d3fa91c7a h1:7ekv24rwWHvInrun3DG0ySwkbu8hlrGoyYt7THO6JVE=
-github.com/MinterTeam/go-amino v0.14.2-0.20191028111634-b14d3fa91c7a/go.mod h1:VyTILj4qkfrynXUSYbKpVpIWmLHt6LVbv+M12z3qNxA=
-github.com/MinterTeam/minter-go-node v1.0.5-0.20191108104342-d263a60c747d h1:88e+nuJ4T3MFcXEVxr8csBMLhYvmma5HULFsHu7HIn0=
-github.com/MinterTeam/minter-go-node v1.0.5-0.20191108104342-d263a60c747d/go.mod h1:DPXX6cx0kPf8bE9p3/uTL780yHbfup/nlcFqdQMqKVk=
+github.com/MinterTeam/go-amino v0.14.2-0.20191113110031-d5499d43f453 h1:uHtg6ZR5wVNJhwVI0Gw1RPPip6sj6Mo2SqoAh8scGp0=
+github.com/MinterTeam/go-amino v0.14.2-0.20191113110031-d5499d43f453/go.mod h1:o4p3WDNrrIOapHOfM5pKJNZ1exPI+c6ZvbemrNapJxc=
+github.com/MinterTeam/minter-go-node v1.0.5-0.20191113110340-a46b8ef88084 h1:0DKoRXi8oaCU3AvKoPtBnBq2BGpELl7LVQaOU5GnmCY=
+github.com/MinterTeam/minter-go-node v1.0.5-0.20191113110340-a46b8ef88084/go.mod h1:ihc9SIXO0ZSnnS6AB2kT+UD9iIHap0TH47BvL6A2fQg=
+github.com/MinterTeam/minter-go-node v1.0.5-0.20191113165918-fa18116d6a26/go.mod h1:ObmmUFPKpVsPWHumQfkq/JVz1oAaM3UYOX+X+OS3pwM=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/VividCortex/gohistogram v1.0.0 h1:6+hBz+qvs0JOrrNhhmR7lFxo5sINxBCGXrdtl/UvroE=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
@@ -112,8 +116,6 @@ github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvW
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/kkdai/bstream v0.0.0-20161212061736-f391b8402d23/go.mod h1:J+Gs4SYgM6CZQHDETBtE9HaSEkGmuNXF86RwHhHUvq4=
-github.com/klim0v/compact-db v0.0.0-20191021120221-f40dfe05717d h1:qq8ewkBtKtC6AsG4WRI1bWMyWJZ8i8617sSJjXA0I9c=
-github.com/klim0v/compact-db v0.0.0-20191021120221-f40dfe05717d/go.mod h1:IH/3eO4H4JTVjqoiNsT9ZuS3gzp6hPKkacaGrHA8UP4=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515 h1:T+h1c/A9Gawja4Y9mFVWj2vyii2bbUNDw3kt9VxK2EY=
 github.com/kr/logfmt v0.0.0-20140226030751-b84e30acd515/go.mod h1:+0opPa2QZZtGFBFZlji/RkVcI2GknAs/DXo4wKdlNEc=
@@ -250,6 +252,8 @@ golang.org/x/sys v0.0.0-20181116152217-5ac8a444bdc5/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20191020212454-3e7259c5e7c2 h1:nq114VpM8lsSlP+lyUbANecYHYiFcSNFtqcBlxRV+gA=
 golang.org/x/sys v0.0.0-20191020212454-3e7259c5e7c2/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20191113150313-8ad342257130 h1:+sdNBpwFF05NvMnEyGynbOs/Gr2LQwORWEPKXuEXxzU=
+golang.org/x/sys v0.0.0-20191113150313-8ad342257130/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/time v0.0.0-20190308202827-9d24e82272b4/go.mod h1:tRJNPiyCQ0inRvYxbN9jk5I+vvW/OXSQhTDSoE431IQ=
