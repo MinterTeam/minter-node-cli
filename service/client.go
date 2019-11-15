@@ -48,7 +48,6 @@ func RunCli(socketPath string, agrs []string) {
 					Persistent: c.Bool("persistent"),
 				})
 				if err != nil {
-					_, _ = fmt.Fprintln(os.Stderr, err)
 					return err
 				}
 				if c.Bool("json") {
@@ -74,7 +73,6 @@ func RunCli(socketPath string, agrs []string) {
 					ToHeight:   c.Int64("to"),
 				})
 				if err != nil {
-					_, _ = fmt.Fprintln(os.Stderr, err)
 					return err
 				}
 				if c.Bool("json") {
@@ -95,11 +93,13 @@ func RunCli(socketPath string, agrs []string) {
 			Action: func(c *cli.Context) error {
 				response, err := api.client.Status(context.Background(), &empty.Empty{})
 				if err != nil {
-					_, _ = fmt.Fprintln(os.Stderr, err)
 					return err
 				}
 				if c.Bool("json") {
-					bytes, _ := json.Marshal(response)
+					bytes, err := json.Marshal(response)
+					if err != nil {
+						return err
+					}
 					_, _ = fmt.Fprintln(os.Stdout, string(bytes))
 					return nil
 				}
@@ -117,11 +117,13 @@ func RunCli(socketPath string, agrs []string) {
 			Action: func(c *cli.Context) error {
 				response, err := api.client.NetInfo(context.Background(), &empty.Empty{})
 				if err != nil {
-					_, _ = fmt.Fprintln(os.Stderr, err)
 					return err
 				}
 				if c.Bool("json") {
-					bytes, _ := json.Marshal(response)
+					bytes, err := json.Marshal(response)
+					if err != nil {
+						return err
+					}
 					_, _ = fmt.Fprintln(os.Stdout, string(bytes))
 					return nil
 				}
@@ -138,11 +140,22 @@ func RunCli(socketPath string, agrs []string) {
 				return nil
 			},
 		},
+		{
+			Name:    "test",
+			Aliases: []string{"t"},
+			Usage:   "test",
+			Action: func(c *cli.Context) error {
+				_, _ = fmt.Fprintln(os.Stdout, "test ok")
+				return nil
+			},
+		},
 	}
 
 	for i := 0; i < len(agrs); i++ {
 		if agrs[i] == "exec" {
-			_ = app.Run(agrs[i:])
+			if err := app.Run(agrs[i:]); err != nil {
+				_, _ = fmt.Fprintln(os.Stderr, err)
+			}
 			return
 		}
 	}
@@ -155,6 +168,8 @@ func RunCli(socketPath string, agrs []string) {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 			continue
 		}
-		_ = app.Run(append([]string{""}, strings.Fields(cmd)...))
+		if err = app.Run(append([]string{""}, strings.Fields(cmd)...)); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
 	}
 }

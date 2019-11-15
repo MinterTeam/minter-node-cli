@@ -19,10 +19,7 @@ func TestStartCLIServer(t *testing.T) {
 	)
 	ctx, cancel := context.WithCancel(context.Background())
 	socketPath, _ := filepath.Abs(filepath.Join(".", "file.sock"))
-	err := ioutil.WriteFile(socketPath, []byte("address already in use"), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
+	_ = ioutil.WriteFile(socketPath, []byte("address already in use"), 0644)
 	go func() {
 		err := StartCLIServer(socketPath, NewManager(blockchain, tmRPC, cfg), ctx)
 		if err != nil {
@@ -30,6 +27,6 @@ func TestStartCLIServer(t *testing.T) {
 		}
 	}()
 	time.Sleep(time.Millisecond)
-	RunCli(socketPath, []string{"exec", "help"})
+	RunCli(socketPath, []string{"exec", "test"})
 	cancel()
 }
