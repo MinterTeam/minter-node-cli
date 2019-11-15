@@ -153,10 +153,6 @@ func main() {
 
 	for i := 1; i < len(os.Args); i++ {
 		if os.Args[i] == "exec" {
-			if i+1 == len(os.Args) {
-				_, _ = fmt.Fprintln(os.Stderr, "use 'exec [command]'")
-				return
-			}
 			_ = app.Run(os.Args[i:])
 			return
 		}
