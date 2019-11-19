@@ -32,6 +32,9 @@ func RunCli(socketPath string, agrs []string) {
 	api := NewApi(pb.NewManagerServiceClient(cc))
 
 	app := &cli.App{}
+	app.CommandNotFound = func(ctx *cli.Context, cmd string) {
+		fmt.Println(fmt.Sprintf("No help topic for '%v'", cmd))
+	}
 	app.UseShortOptionHandling = true
 	app.Commands = []*cli.Command{
 		{
