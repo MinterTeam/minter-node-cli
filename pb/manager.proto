@@ -8,9 +8,9 @@ import "google/protobuf/empty.proto";
 message NodeInfo {
 
     message ProtocolVersion {
-        string p2p = 3;
-        string block = 1;
-        string app = 2;
+        uint64 p2p = 3;
+        uint64 block = 1;
+        uint64 app = 2;
     }
 
     ProtocolVersion protocol_version = 8;
@@ -32,7 +32,7 @@ message NodeInfo {
 message NetInfoResponse {
         bool listening = 4;
         repeated string listeners = 1;
-        string n_peers = 2;
+        int64 n_peers = 2;
 
         message Peer {
 
@@ -41,22 +41,22 @@ message NetInfoResponse {
             bool is_outbound = 1;
 
             message ConnectionStatus {
-                string Duration = 4;
+                int64 Duration = 4;
 
                 message Monitor {
                     bool Active = 13;
                     string Start = 1;
-                    string Duration = 2;
-                    string Idle = 3;
-                    string Bytes = 4;
-                    string Samples = 5;
-                    string InstRate = 6;
-                    string CurRate = 7;
-                    string AvgRate = 8;
-                    string PeakRate = 9;
-                    string BytesRem = 10;
-                    string TimeRem = 11;
-                    double Progress = 12;
+                    int64 Duration = 2;
+                    int64 Idle = 3;
+                    int64 Bytes = 4;
+                    int64 Samples = 5;
+                    int64 InstRate = 6;
+                    int64 CurRate = 7;
+                    int64 AvgRate = 8;
+                    int64 PeakRate = 9;
+                    int64 BytesRem = 10;
+                    int64 TimeRem = 11;
+                    uint32 Progress = 12;
                 }
 
                 Monitor SendMonitor = 1;
@@ -64,11 +64,11 @@ message NetInfoResponse {
                 Monitor RecvMonitor = 2;
 
                 message Channel {
-                    double ID = 5;
-                    string SendQueueCapacity = 1;
-                    string SendQueueSize = 2;
-                    string Priority = 3;
-                    string RecentlySent = 4;
+                    int32 ID = 5;
+                    int64 SendQueueCapacity = 1;
+                    int64 SendQueueSize = 2;
+                    int64 Priority = 3;
+                    int64 RecentlySent = 4;
                 }
 
                 repeated Channel Channels = 3;
@@ -87,7 +87,7 @@ message StatusResponse {
         string latest_app_hash = 2;
         int64 latest_block_height = 3;
         string latest_block_time = 4;
-        string state_history = 5;
+        int64 keep_last_states = 5;
 
         message TmStatus {
 
