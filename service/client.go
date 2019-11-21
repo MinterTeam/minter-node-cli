@@ -26,7 +26,7 @@ func (mc *ManagerConsole) Execute(args []string) error {
 	return mc.cli.Run(append([]string{""}, args...))
 }
 
-func (mc *ManagerConsole) Cli() error {
+func (mc *ManagerConsole) Cli() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("$ ")
