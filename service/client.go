@@ -14,22 +14,40 @@ import (
 	"strings"
 )
 
-type Api struct {
-	client pb.ManagerServiceClient
+type ManagerConsole struct {
+	cli *cli.App
 }
 
-func NewApi(client pb.ManagerServiceClient) *Api {
-	return &Api{client: client}
+func NewManagerConsole(cli *cli.App) *ManagerConsole {
+	return &ManagerConsole{cli: cli}
 }
 
-func RunCli(socketPath string, agrs []string) {
+func (mc *ManagerConsole) Execute(args []string) error {
+	return mc.cli.Run(append([]string{""}, args...))
+}
+
+func (mc *ManagerConsole) Cli() error {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("$ ")
+		cmd, err := reader.ReadString('\n')
+		if err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+			continue
+		}
+		if err = mc.Execute(strings.Fields(cmd)); err != nil {
+			_, _ = fmt.Fprintln(os.Stderr, err)
+		}
+	}
+}
+
+func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 	cc, err := grpc.Dial("passthrough:///unix:///"+socketPath, grpc.WithInsecure())
 	if err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, err)
-		return
+		return nil, err
 	}
 
-	api := NewApi(pb.NewManagerServiceClient(cc))
+	client := pb.NewManagerServiceClient(cc)
 
 	app := &cli.App{}
 	app.CommandNotFound = func(ctx *cli.Context, cmd string) {
@@ -47,7 +65,7 @@ func RunCli(socketPath string, agrs []string) {
 				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
-				_, err := api.client.DealPeer(context.Background(), &pb.DealPeerRequest{
+				_, err := client.DealPeer(context.Background(), &pb.DealPeerRequest{
 					Address:    c.String("address"),
 					Persistent: c.Bool("persistent"),
 				})
@@ -72,7 +90,7 @@ func RunCli(socketPath string, agrs []string) {
 				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
-				_, err := api.client.PruneBlocks(context.Background(), &pb.PruneBlocksRequest{
+				_, err := client.PruneBlocks(context.Background(), &pb.PruneBlocksRequest{
 					FromHeight: c.Int64("from"),
 					ToHeight:   c.Int64("to"),
 				})
@@ -95,7 +113,7 @@ func RunCli(socketPath string, agrs []string) {
 				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
-				response, err := api.client.Status(context.Background(), &empty.Empty{})
+				response, err := client.Status(context.Background(), &empty.Empty{})
 				if err != nil {
 					return err
 				}
@@ -119,7 +137,7 @@ func RunCli(socketPath string, agrs []string) {
 				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
-				response, err := api.client.NetInfo(context.Background(), &empty.Empty{})
+				response, err := client.NetInfo(context.Background(), &empty.Empty{})
 				if err != nil {
 					return err
 				}
@@ -155,25 +173,5 @@ func RunCli(socketPath string, agrs []string) {
 		},
 	}
 
-	for i := 0; i < len(agrs); i++ {
-		if agrs[i] == "exec" {
-			if err := app.Run(agrs[i:]); err != nil {
-				_, _ = fmt.Fprintln(os.Stderr, err)
-			}
-			return
-		}
-	}
-
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("$ ")
-		cmd, err := reader.ReadString('\n')
-		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-			continue
-		}
-		if err = app.Run(append([]string{""}, strings.Fields(cmd)...)); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-		}
-	}
+	return NewManagerConsole(app), nil
 }
