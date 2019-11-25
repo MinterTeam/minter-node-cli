@@ -23,7 +23,7 @@ func NewManagerConsole(cli *cli.App) *ManagerConsole {
 }
 
 func (mc *ManagerConsole) Execute(args []string) error {
-	return mc.cli.Run(append([]string{""}, args...))
+	return mc.cli.Run(append(make([]string, 1, len(args)+1), args...))
 }
 
 func (mc *ManagerConsole) Cli() {
