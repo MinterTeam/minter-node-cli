@@ -33,7 +33,7 @@ func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) er
 	})
 
 	kill := make(chan struct{})
-	func() {
+	go func() {
 		select {
 		case <-ctx.Done():
 			server.GracefulStop()
