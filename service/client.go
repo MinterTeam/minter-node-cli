@@ -27,16 +27,16 @@ func (mc *ManagerConsole) Execute(args []string) error {
 }
 
 func completer(commands cli.Commands) prompt.Completer {
+	completions := make([]prompt.Suggest, 0, len(commands))
+	for _, command := range commands {
+		completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
+	}
 	return func(doc prompt.Document) []prompt.Suggest {
 		before := doc.TextBeforeCursor()
 		wordsBefore := strings.Split(before, " ")
 		// the command being entered is the text until the first space
 		commandBefore := wordsBefore[0]
 		if len(wordsBefore) == 1 {
-			completions := make([]prompt.Suggest, 0, len(commands))
-			for _, command := range commands {
-				completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
-			}
 			return prompt.FilterHasPrefix(completions, commandBefore, true)
 		}
 
