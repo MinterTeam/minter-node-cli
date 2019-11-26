@@ -50,16 +50,6 @@ func completer(commands cli.Commands) prompt.Completer {
 			}
 		}
 
-		switch strings.ToLower(commandBefore) {
-		case "dial_peer":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--address=", Description: "address"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--persistent ", Description: "persistent"})
-		case "prune_blocks":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--from=", Description: "from"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--to=", Description: "to"})
-		default:
-			suggestions = append(suggestions, prompt.Suggest{Text: "--json ", Description: "echo in json format"})
-		}
 		return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
 	}
 }
@@ -69,7 +59,6 @@ func (mc *ManagerConsole) Cli() {
 	for {
 		t := prompt.Input(">>> ", completer(mc.cli.Commands),
 			prompt.OptionHistory(history),
-			prompt.OptionSelectedSuggestionTextColor(prompt.DarkRed),
 		)
 		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
