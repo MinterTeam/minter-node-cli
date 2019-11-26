@@ -41,17 +41,17 @@ func completer(commands cli.Commands) prompt.Completer {
 		}
 
 		var suggestions []prompt.Suggest
-		for _, command := range commands {
-			if strings.ToLower(commandBefore) != command.Name {
-				continue
-			}
-
-			suggestions = make([]prompt.Suggest, 0, len(command.Flags))
-			for _, flag := range command.Flags {
-				suggestions = append(suggestions, prompt.Suggest{Text: "--" + flag.Names()[0], Description: flag.String()})
-			}
-			return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
-		}
+		//for _, command := range commands {
+		//	if strings.ToLower(commandBefore) != command.Name {
+		//		continue
+		//	}
+		//
+		//	suggestions = make([]prompt.Suggest, 0, len(command.Flags))
+		//	for _, flag := range command.Flags {
+		//		suggestions = append(suggestions, prompt.Suggest{Text: "--" + flag.Names()[0], Description: flag.String()})
+		//	}
+		//	return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
+		//}
 
 		switch strings.ToLower(commandBefore) {
 		case "dial_peer":
