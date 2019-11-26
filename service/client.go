@@ -26,19 +26,38 @@ func (mc *ManagerConsole) Execute(args []string) error {
 	return mc.cli.Run(append(make([]string, 1, len(args)+1), args...))
 }
 
-func completer(commands cli.Commands) func(d prompt.Document) []prompt.Suggest {
+func completer(commands cli.Commands) prompt.Completer {
 	completions := make([]prompt.Suggest, 0, len(commands))
 	for _, command := range commands {
 		completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
 	}
-	return func(d prompt.Document) []prompt.Suggest {
-		return prompt.FilterHasPrefix(completions, d.GetWordBeforeCursor(), true)
+	return func(doc prompt.Document) []prompt.Suggest {
+		before := doc.TextBeforeCursor()
+		wordsBefore := strings.Split(before, " ")
+		// the command being entered is the text until the first space
+		commandBefore := wordsBefore[0]
+		if len(wordsBefore) == 1 {
+			return prompt.FilterHasPrefix(completions, commandBefore, true)
+		}
+
+		var suggestions []prompt.Suggest
+		switch strings.ToLower(commandBefore) {
+		case "dial_peer":
+			suggestions = append(suggestions, prompt.Suggest{Text: "--address", Description: "address"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--persistent", Description: "persistent"})
+		case "prune_blocks":
+			suggestions = append(suggestions, prompt.Suggest{Text: "--from", Description: "from"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--to", Description: "to"})
+		default:
+			suggestions = append(suggestions, prompt.Suggest{Text: "--json", Description: "echo in json format"})
+		}
+		return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
 	}
 }
 
 func (mc *ManagerConsole) Cli() {
 	for {
-		t := prompt.Input("> ", completer(mc.cli.Commands))
+		t := prompt.Input(">>> ", completer(mc.cli.Commands))
 		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
