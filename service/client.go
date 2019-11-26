@@ -57,7 +57,10 @@ func completer(commands cli.Commands) prompt.Completer {
 
 func (mc *ManagerConsole) Cli() {
 	for {
-		t := prompt.Input(">>> ", completer(mc.cli.Commands))
+		t := prompt.Input(">>> ", completer(mc.cli.Commands),
+			prompt.OptionHistory(nil),
+			prompt.OptionSelectedSuggestionTextColor(prompt.DarkRed),
+		)
 		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
