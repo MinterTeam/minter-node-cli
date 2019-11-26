@@ -1,11 +1,11 @@
 package service
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/MinterTeam/minter-node-cli/pb"
+	"github.com/c-bata/go-prompt"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/urfave/cli/v2"
@@ -26,16 +26,20 @@ func (mc *ManagerConsole) Execute(args []string) error {
 	return mc.cli.Run(append(make([]string, 1, len(args)+1), args...))
 }
 
+func completer(commands cli.Commands) func(d prompt.Document) []prompt.Suggest {
+	completions := make([]prompt.Suggest, 0, len(commands))
+	for _, command := range commands {
+		completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
+	}
+	return func(d prompt.Document) []prompt.Suggest {
+		return prompt.FilterHasPrefix(completions, d.GetWordBeforeCursor(), true)
+	}
+}
+
 func (mc *ManagerConsole) Cli() {
-	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Print("$ ")
-		cmd, err := reader.ReadString('\n')
-		if err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, err)
-			continue
-		}
-		if err = mc.Execute(strings.Fields(cmd)); err != nil {
+		t := prompt.Input("> ", completer(mc.cli.Commands))
+		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
 	}
