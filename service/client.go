@@ -27,20 +27,29 @@ func (mc *ManagerConsole) Execute(args []string) error {
 }
 
 func completer(commands cli.Commands) prompt.Completer {
-	completions := make([]prompt.Suggest, 0, len(commands))
-	for _, command := range commands {
-		completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
-	}
 	return func(doc prompt.Document) []prompt.Suggest {
 		before := doc.TextBeforeCursor()
 		wordsBefore := strings.Split(before, " ")
 		// the command being entered is the text until the first space
 		commandBefore := wordsBefore[0]
 		if len(wordsBefore) == 1 {
+			completions := make([]prompt.Suggest, 0, len(commands))
+			for _, command := range commands {
+				completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
+			}
 			return prompt.FilterHasPrefix(completions, commandBefore, true)
 		}
 
 		var suggestions []prompt.Suggest
+		for _, command := range commands {
+			if strings.ToLower(commandBefore) == command.Name {
+				for _, flag := range command.Flags {
+					suggestions = append(suggestions, prompt.Suggest{Text: "--" + flag.Names()[0], Description: flag.String()})
+				}
+				break
+			}
+		}
+
 		switch strings.ToLower(commandBefore) {
 		case "dial_peer":
 			suggestions = append(suggestions, prompt.Suggest{Text: "--address=", Description: "address"})
