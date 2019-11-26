@@ -56,14 +56,16 @@ func completer(commands cli.Commands) prompt.Completer {
 }
 
 func (mc *ManagerConsole) Cli() {
+	var history []string
 	for {
 		t := prompt.Input(">>> ", completer(mc.cli.Commands),
-			prompt.OptionHistory(nil),
+			prompt.OptionHistory(history),
 			prompt.OptionSelectedSuggestionTextColor(prompt.DarkRed),
 		)
 		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
 		}
+		history = append(history, t)
 	}
 }
 
