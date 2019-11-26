@@ -49,7 +49,7 @@ func completer(commands cli.Commands) prompt.Completer {
 			suggestions = append(suggestions, prompt.Suggest{Text: "--from=", Description: "from"})
 			suggestions = append(suggestions, prompt.Suggest{Text: "--to=", Description: "to"})
 		default:
-			suggestions = append(suggestions, prompt.Suggest{Text: "--json\n", Description: "echo in json format"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--json", Description: "echo in json format"})
 		}
 		return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
 	}
