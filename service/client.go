@@ -43,13 +43,13 @@ func completer(commands cli.Commands) prompt.Completer {
 		var suggestions []prompt.Suggest
 		switch strings.ToLower(commandBefore) {
 		case "dial_peer":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--address", Description: "address"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--persistent", Description: "persistent"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--address=", Description: "address"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--persistent ", Description: "persistent"})
 		case "prune_blocks":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--from", Description: "from"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--to", Description: "to"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--from=", Description: "from"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--to=", Description: "to"})
 		default:
-			suggestions = append(suggestions, prompt.Suggest{Text: "--json", Description: "echo in json format"})
+			suggestions = append(suggestions, prompt.Suggest{Text: "--json\n", Description: "echo in json format"})
 		}
 		return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
 	}
