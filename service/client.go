@@ -27,9 +27,9 @@ func (mc *ManagerConsole) Execute(args []string) error {
 }
 
 func completer(commands cli.Commands) prompt.Completer {
-	completions := make([]prompt.Suggest, 0, len(commands))
+	cmdHints := make([]prompt.Suggest, 0, len(commands))
 	for _, command := range commands {
-		completions = append(completions, prompt.Suggest{Text: command.Name, Description: command.Description})
+		cmdHints = append(cmdHints, prompt.Suggest{Text: command.Name, Description: command.Usage})
 	}
 	return func(doc prompt.Document) []prompt.Suggest {
 		before := doc.TextBeforeCursor()
@@ -37,33 +37,23 @@ func completer(commands cli.Commands) prompt.Completer {
 		// the command being entered is the text until the first space
 		commandBefore := wordsBefore[0]
 		if len(wordsBefore) == 1 {
-			return prompt.FilterHasPrefix(completions, commandBefore, true)
+			return prompt.FilterHasPrefix(cmdHints, commandBefore, true)
 		}
 
-		var suggestions []prompt.Suggest
-		//for _, command := range commands {
-		//	if strings.ToLower(commandBefore) != command.Name {
-		//		continue
-		//	}
-		//
-		//	suggestions = make([]prompt.Suggest, 0, len(command.Flags))
-		//	for _, flag := range command.Flags {
-		//		suggestions = append(suggestions, prompt.Suggest{Text: "--" + flag.Names()[0], Description: flag.String()})
-		//	}
-		//	return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
-		//}
+		var flagHints []prompt.Suggest
 
 		switch strings.ToLower(commandBefore) {
 		case "dial_peer":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--address=", Description: "address"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--persistent ", Description: "persistent"})
+			flagHints = append(flagHints, prompt.Suggest{Text: "--address=", Description: "address"})
+			flagHints = append(flagHints, prompt.Suggest{Text: "--persistent ", Description: "persistent"})
 		case "prune_blocks":
-			suggestions = append(suggestions, prompt.Suggest{Text: "--from=", Description: "from"})
-			suggestions = append(suggestions, prompt.Suggest{Text: "--to=", Description: "to"})
+			flagHints = append(flagHints, prompt.Suggest{Text: "--from=", Description: "from"})
+			flagHints = append(flagHints, prompt.Suggest{Text: "--to=", Description: "to"})
 		default:
-			suggestions = append(suggestions, prompt.Suggest{Text: "--json ", Description: "echo in json format"})
+			flagHints = append(flagHints, prompt.Suggest{Text: "--json ", Description: "echo in json format"})
 		}
-		return prompt.FilterHasPrefix(suggestions, wordsBefore[len(wordsBefore)-1], true)
+
+		return prompt.FilterHasPrefix(flagHints, wordsBefore[len(wordsBefore)-1], true)
 	}
 }
 
@@ -72,6 +62,7 @@ func (mc *ManagerConsole) Cli() {
 	for {
 		t := prompt.Input(">>> ", completer(mc.cli.Commands),
 			prompt.OptionHistory(history),
+			prompt.OptionShowCompletionAtStart(),
 		)
 		if err := mc.Execute(strings.Fields(t)); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, err)
@@ -101,7 +92,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "address", Aliases: []string{"a"}, Required: true},
 				&cli.BoolFlag{Name: "persistent", Aliases: []string{"p"}, Required: false},
-				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
 				_, err := client.DealPeer(context.Background(), &pb.DealPeerRequest{
@@ -110,10 +100,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 				})
 				if err != nil {
 					return err
-				}
-				if c.Bool("json") {
-					fmt.Println("OK")
-					return nil
 				}
 				fmt.Println("OK")
 				return nil
@@ -126,7 +112,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Flags: []cli.Flag{
 				&cli.IntFlag{Name: "from", Aliases: []string{"f"}, Required: true},
 				&cli.IntFlag{Name: "to", Aliases: []string{"t"}, Required: true},
-				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
 				_, err := client.PruneBlocks(context.Background(), &pb.PruneBlocksRequest{
@@ -135,10 +120,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 				})
 				if err != nil {
 					return err
-				}
-				if c.Bool("json") {
-					fmt.Println("OK")
-					return nil
 				}
 				fmt.Println("OK")
 				return nil
@@ -204,7 +185,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 		{
 			Name:    "test",
 			Aliases: []string{"t"},
-			Usage:   "test",
+			Usage:   "test console command",
 			Action: func(c *cli.Context) error {
 				fmt.Println("test ok")
 				return nil
