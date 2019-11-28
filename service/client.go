@@ -202,6 +202,24 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 				return nil
 			},
 		},
+		{
+			Name:    "test1",
+			Aliases: []string{"t"},
+			Usage:   "description 1",
+			Action: func(c *cli.Context) error {
+				fmt.Println("test ok")
+				return nil
+			},
+		},
+		{
+			Name:    "test2",
+			Aliases: []string{"t"},
+			Usage:   "description test2 command",
+			Action: func(c *cli.Context) error {
+				fmt.Println("test ok")
+				return nil
+			},
+		},
 	}
 
 	return NewManagerConsole(app), nil
