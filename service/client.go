@@ -42,15 +42,26 @@ func completer(commands cli.Commands) prompt.Completer {
 
 		var flagHints []prompt.Suggest
 
-		switch strings.ToLower(commandBefore) {
-		case "dial_peer":
-			flagHints = append(flagHints, prompt.Suggest{Text: "--address=", Description: "address"})
-			flagHints = append(flagHints, prompt.Suggest{Text: "--persistent ", Description: "persistent"})
-		case "prune_blocks":
-			flagHints = append(flagHints, prompt.Suggest{Text: "--from=", Description: "from"})
-			flagHints = append(flagHints, prompt.Suggest{Text: "--to=", Description: "to"})
-		default:
-			flagHints = append(flagHints, prompt.Suggest{Text: "--json ", Description: "echo in json format"})
+		for _, command := range commands {
+			if command.Name != strings.ToLower(commandBefore) {
+				continue
+			}
+
+			for _, flag := range command.Flags {
+				tag := "--" + flag.Names()[0]
+				if strings.Contains(before, tag) {
+					continue
+				}
+				set := " "
+				if _, ok := flag.(*cli.BoolFlag); !ok {
+					set = "="
+				}
+				flagHints = append(flagHints, prompt.Suggest{
+					Text:        tag + set,
+					Description: strings.ReplaceAll(flag.String(), "\t", " "),
+				})
+			}
+			break
 		}
 
 		return prompt.FilterHasPrefix(flagHints, wordsBefore[len(wordsBefore)-1], true)
@@ -130,7 +141,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Aliases: []string{"s"},
 			Usage:   "display the current status of the blockchain",
 			Flags: []cli.Flag{
-				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
+				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false, Usage: "echo in json format"},
 			},
 			Action: func(c *cli.Context) error {
 				response, err := client.Status(context.Background(), &empty.Empty{})
