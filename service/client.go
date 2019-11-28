@@ -42,29 +42,39 @@ func completer(commands cli.Commands) prompt.Completer {
 
 		var flagHints []prompt.Suggest
 
+		if strings.Contains(before, "--help") {
+			return flagHints
+		}
+
 		for _, command := range commands {
 			if command.Name != strings.ToLower(commandBefore) {
 				continue
 			}
 
+			if len(wordsBefore) == 2 {
+				flagHints = append(flagHints, prompt.Suggest{
+					Text:        "--help",
+					Description: fmt.Sprintf("help %q", command.Name),
+				})
+			}
 			for _, flag := range command.Flags {
 				tag := "--" + flag.Names()[0]
 				if strings.Contains(before, tag) {
 					continue
 				}
-				set := " "
-				if _, ok := flag.(*cli.BoolFlag); !ok {
-					set = "="
+				neededValue := "="
+				if _, ok := flag.(*cli.BoolFlag); ok {
+					neededValue = " "
 				}
 				flagHints = append(flagHints, prompt.Suggest{
-					Text:        tag + set,
+					Text:        tag + neededValue,
 					Description: strings.ReplaceAll(flag.String(), "\t", " "),
 				})
 			}
 			break
 		}
 
-		return prompt.FilterHasPrefix(flagHints, wordsBefore[len(wordsBefore)-1], true)
+		return prompt.FilterFuzzy(flagHints, wordsBefore[len(wordsBefore)-1], true)
 	}
 }
 
