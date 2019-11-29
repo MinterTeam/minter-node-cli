@@ -20,7 +20,7 @@ type Manager struct {
 	cfg        *config.Config
 }
 
-func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) *Manager {
+func NewManager(blockchain *minter.Blockchain, tmRPC *rpc.Local, cfg *config.Config) pb.ManagerServiceServer {
 	return &Manager{blockchain: blockchain, tmRPC: tmRPC, cfg: cfg}
 }
 

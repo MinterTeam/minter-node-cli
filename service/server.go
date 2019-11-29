@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func StartCLIServer(socketPath string, manager *Manager, ctx context.Context) error {
+func StartCLIServer(socketPath string, manager pb.ManagerServiceServer, ctx context.Context) error {
 	if err := os.RemoveAll(socketPath); err != nil {
 		return err
 	}
