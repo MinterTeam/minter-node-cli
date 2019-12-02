@@ -51,15 +51,12 @@ func completer(commands cli.Commands) prompt.Completer {
 				continue
 			}
 
-			if len(wordsBefore) == 2 {
-				flagHints = append(flagHints, prompt.Suggest{
-					Text:        "--help",
-					Description: fmt.Sprintf("help %q", command.Name),
-				})
-			}
 			for _, flag := range command.Flags {
 				tag := "--" + flag.Names()[0]
 				if strings.Contains(before, tag) {
+					continue
+				}
+				if len(wordsBefore) > 2 && tag == "--help" {
 					continue
 				}
 				neededValue := "="
