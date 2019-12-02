@@ -76,7 +76,6 @@ func completer(commands cli.Commands) prompt.Completer {
 }
 
 func (mc *ManagerConsole) Cli() {
-	mc.cli.Setup()
 	completer := completer(mc.cli.Commands)
 	var history []string
 	for {
@@ -112,7 +111,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Flags: []cli.Flag{
 				&cli.StringFlag{Name: "address", Aliases: []string{"a"}, Required: true},
 				&cli.BoolFlag{Name: "persistent", Aliases: []string{"p"}, Required: false},
-				cli.HelpFlag,
 			},
 			Action: func(c *cli.Context) error {
 				_, err := client.DealPeer(context.Background(), &pb.DealPeerRequest{
@@ -133,7 +131,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Flags: []cli.Flag{
 				&cli.IntFlag{Name: "from", Aliases: []string{"f"}, Required: true},
 				&cli.IntFlag{Name: "to", Aliases: []string{"t"}, Required: true},
-				cli.HelpFlag,
 			},
 			Action: func(c *cli.Context) error {
 				_, err := client.PruneBlocks(context.Background(), &pb.PruneBlocksRequest{
@@ -201,7 +198,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Name:    "exit",
 			Aliases: []string{"e"},
 			Usage:   "exit",
-			Flags:   []cli.Flag{cli.HelpFlag},
 			Action: func(c *cli.Context) error {
 				os.Exit(0)
 				return nil
@@ -211,7 +207,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Name:    "test",
 			Aliases: []string{"t"},
 			Usage:   "test console command",
-			Flags:   []cli.Flag{cli.HelpFlag},
 			Action: func(c *cli.Context) error {
 				fmt.Println("test ok")
 				return nil
@@ -221,7 +216,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Name:    "test1",
 			Aliases: []string{"t"},
 			Usage:   "description 1",
-			Flags:   []cli.Flag{cli.HelpFlag},
 			Action: func(c *cli.Context) error {
 				fmt.Println("test ok")
 				return nil
@@ -231,7 +225,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Name:    "test2",
 			Aliases: []string{"t"},
 			Usage:   "description test2 command",
-			Flags:   []cli.Flag{cli.HelpFlag},
 			Action: func(c *cli.Context) error {
 				fmt.Println("test ok")
 				return nil
@@ -239,5 +232,10 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 		},
 	}
 
+	for _, command := range app.Commands {
+		command.Flags = append(command.Flags, cli.HelpFlag)
+	}
+
+	app.Setup()
 	return NewManagerConsole(app), nil
 }
