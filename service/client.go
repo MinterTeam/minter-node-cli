@@ -103,6 +103,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 		fmt.Println(fmt.Sprintf("No help topic for '%v'", cmd))
 	}
 	app.UseShortOptionHandling = true
+	jsonFlag := &cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false, Usage: "echo in json format"}
 	app.Commands = []*cli.Command{
 		{
 			Name:    "dial_peer",
@@ -149,8 +150,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Aliases: []string{"s"},
 			Usage:   "display the current status of the blockchain",
 			Flags: []cli.Flag{
-				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false, Usage: "echo in json format"},
-				cli.HelpFlag,
+				jsonFlag,
 			},
 			Action: func(c *cli.Context) error {
 				response, err := client.Status(context.Background(), &empty.Empty{})
@@ -174,8 +174,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Aliases: []string{"ni"},
 			Usage:   "display network data",
 			Flags: []cli.Flag{
-				&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Required: false},
-				cli.HelpFlag,
+				jsonFlag,
 			},
 			Action: func(c *cli.Context) error {
 				response, err := client.NetInfo(context.Background(), &empty.Empty{})
@@ -200,33 +199,6 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Usage:   "exit",
 			Action: func(c *cli.Context) error {
 				os.Exit(0)
-				return nil
-			},
-		},
-		{
-			Name:    "test",
-			Aliases: []string{"t"},
-			Usage:   "test console command",
-			Action: func(c *cli.Context) error {
-				fmt.Println("test ok")
-				return nil
-			},
-		},
-		{
-			Name:    "test1",
-			Aliases: []string{"t"},
-			Usage:   "description 1",
-			Action: func(c *cli.Context) error {
-				fmt.Println("test ok")
-				return nil
-			},
-		},
-		{
-			Name:    "test2",
-			Aliases: []string{"t"},
-			Usage:   "description test2 command",
-			Action: func(c *cli.Context) error {
-				fmt.Println("test ok")
 				return nil
 			},
 		},
