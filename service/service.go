@@ -162,15 +162,14 @@ func (m *Manager) NetInfo(context.Context, *empty.Empty) (*pb.NetInfoResponse, e
 }
 
 func (m *Manager) PruneBlocks(ctx context.Context, req *pb.PruneBlocksRequest) (*empty.Empty, error) {
-	//m.blockchain.PruneStates(req.FromHeight, req.ToHeight)
-	panic("PruneBlocks")
+	return new(empty.Empty), status.Error(codes.Unimplemented, "todo")
 }
 
 func (m *Manager) DealPeer(ctx context.Context, req *pb.DealPeerRequest) (*empty.Empty, error) {
 	res := new(empty.Empty)
 	_, err := m.tmRPC.DialPeers([]string{req.Address}, req.Persistent)
 	if err != nil {
-		return res, status.Error(codes.Internal, err.Error())
+		return res, status.Error(codes.FailedPrecondition, err.Error())
 	}
 	return res, nil
 }

@@ -110,7 +110,7 @@ func ConfigureManagerConsole(socketPath string) (*ManagerConsole, error) {
 			Aliases: []string{"dp"},
 			Usage:   "connect a new peer",
 			Flags: []cli.Flag{
-				&cli.StringFlag{Name: "address", Aliases: []string{"a"}, Required: true},
+				&cli.StringFlag{Name: "address", Aliases: []string{"a"}, Required: true, Usage: "id@ip:port"},
 				&cli.BoolFlag{Name: "persistent", Aliases: []string{"p"}, Required: false},
 			},
 			Action: func(c *cli.Context) error {
